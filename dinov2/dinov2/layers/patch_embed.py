@@ -34,7 +34,7 @@ class PatchEmbed(nn.Module):
         norm_layer: Normalization layer.
     """
 
-    def _init__(
+    def __init__(
         self,
         img_size: Union[int, Tuple[int, int]] = 144,
         patch_size: Union[int, Tuple[int, int]] = 1,
