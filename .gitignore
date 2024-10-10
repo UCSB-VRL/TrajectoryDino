@@ -2,3 +2,4 @@ dinov2_outputs/
 # Ignore wandb folder
 dinov2/dinov2/train/wandb/
 .vscode
+wandb/
