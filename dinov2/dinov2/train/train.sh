@@ -1,9 +1,6 @@
 #!/bin/bash
-#export CUDA_LAUNCH_BLOCKING=1
 export CUDA_VISIBLE_DEVICES=6,7
-# Define variables with proper names and paths
-$config_file=vit16_short_traj.yaml
-$output_dir=/data/home/umang/Dinov2_trajectory/dinov2_outputs
-
-# Run the Python script with the provided arguments
+config_file=vit16_short_traj.yaml
+# dinov2/configs/train/vitl16_short.yaml
+output_dir=/mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs
 python train.py 

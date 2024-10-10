@@ -45,8 +45,8 @@ class SSLMetaArch(nn.Module):
             logger.info(f"OPTIONS -- pretrained weights: loading from {cfg.student.pretrained_weights}")
             student_backbone.load_state_dict(chkpt["model"], strict=False)
 
-        self.embed_dim = embed_dim
-        self.dino_out_dim = cfg.dino.head_n_prototypes
+        self.embed_dim = embed_dim # 1024
+        self.dino_out_dim = cfg.dino.head_n_prototypes # 65536 = 256 * 256
 
         self.do_dino = cfg.dino.loss_weight > 0
         self.do_koleo = cfg.dino.koleo_loss_weight > 0

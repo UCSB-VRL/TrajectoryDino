@@ -1,0 +1,10 @@
+{"time":"2024-10-07T12:27:40.882988953-07:00","level":"INFO","msg":"using version","core version":"0.18.3"}
+{"time":"2024-10-07T12:27:40.883022373-07:00","level":"INFO","msg":"created symlink","path":"/data/home/bowen/projects/dinov2_trajectory/wandb/run-20241007_122740-2vqs0j5d/logs/debug-core.log"}
+{"time":"2024-10-07T12:27:40.885262045-07:00","level":"ERROR","msg":"dialing: google: could not find default credentials. See https://cloud.google.com/docs/authentication/external/set-up-adc for more information"}
+{"time":"2024-10-07T12:27:40.903368676-07:00","level":"INFO","msg":"created new stream","id":"2vqs0j5d"}
+{"time":"2024-10-07T12:27:40.903428891-07:00","level":"INFO","msg":"stream: started","id":"2vqs0j5d"}
+{"time":"2024-10-07T12:27:40.903490564-07:00","level":"INFO","msg":"sender: started","stream_id":{"value":"2vqs0j5d"}}
+{"time":"2024-10-07T12:27:40.903456212-07:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"2vqs0j5d"}}
+{"time":"2024-10-07T12:27:40.903536902-07:00","level":"INFO","msg":"handler: started","stream_id":{"value":"2vqs0j5d"}}
+{"time":"2024-10-07T12:27:41.138498548-07:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2024-10-07T12:27:41.139930213-07:00","level":"INFO","msg":"Starting system monitor"}

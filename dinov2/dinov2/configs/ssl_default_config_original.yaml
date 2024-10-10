@@ -61,7 +61,7 @@ ibot:
 train:
   batch_size_per_gpu: 64
   dataset_path: Trajectory:split=TRAIN
-  output_dir: /data/home/umang/Dinov2_trajectory/dinov2_outputs/
+  output_dir: /mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs
   saveckp_freq: 20
   seed: 0
   num_workers: 10

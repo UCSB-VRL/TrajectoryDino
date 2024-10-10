@@ -19,7 +19,7 @@ def build_model(args, only_teacher=False, img_size=224, patch_size=1):
             img_size=img_size,
             num_heads=args.num_heads,
             patch_size=patch_size,
-            embed_dim =args.embed_dim,
+            embed_dim=args.embed_dim,
             init_values=args.layerscale,
             ffn_layer=args.ffn_layer,
             block_chunks=args.block_chunks,
@@ -43,4 +43,5 @@ def build_model(args, only_teacher=False, img_size=224, patch_size=1):
 
 
 def build_model_from_cfg(cfg, only_teacher=False):
+# define image size
     return build_model(cfg.student, only_teacher=only_teacher, img_size=cfg.crops.global_crops_size)

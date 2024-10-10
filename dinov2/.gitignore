@@ -12,3 +12,5 @@ dist/
 
 # Ignore wandb folder
 dinov2/dinov2/train/wandb/
+wandb/
+dinov2/wandb/

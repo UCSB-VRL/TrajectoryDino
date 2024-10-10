@@ -5,7 +5,8 @@
 
 from typing import Any, Tuple
 
-from torchvision.datasets import VisionDataset, TrajectoryDataset
+from torchvision.datasets import VisionDataset
+from .trajectory_base import TrajectoryDatasetBase
 
 from .decoders import TargetDecoder, ImageDataDecoder
 import numpy as np
@@ -41,7 +42,7 @@ class ExtendedVisionDataset(VisionDataset):
         raise NotImplementedError
 
 
-class ExtendedTrajectoryDataset(TrajectoryDataset):
+class ExtendedTrajectoryDataset(TrajectoryDatasetBase):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 

@@ -1,0 +1,122 @@
+diff --git a/dinov2/dinov2/configs/ssl_default_config.yaml b/dinov2/dinov2/configs/ssl_default_config.yaml
+index 5b82247..96b068b 100644
+--- a/dinov2/dinov2/configs/ssl_default_config.yaml
++++ b/dinov2/dinov2/configs/ssl_default_config.yaml
+@@ -60,8 +60,8 @@ ibot:
+   head_hidden_dim: 2048
+ train:
+   batch_size_per_gpu: 64
+-  dataset_path: Trajectory:split=TRAIN:root=/data/home/umang/Vader_data/haystac_dinov2/p1tj_traj_npy
+-  output_dir: /data/home/umang/Dinov2_trajectory/dinov2_outputs
++  dataset_path: Trajectory:split=TRAIN:root=/mnt/mind_ssd2/bowen/dinov2_data/p1tj_traj_npy
++  output_dir: /mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs
+   saveckp_freq: 20
+   seed: 0
+   num_workers: 10
+diff --git a/dinov2/dinov2/configs/ssl_default_config_original.yaml b/dinov2/dinov2/configs/ssl_default_config_original.yaml
+index 0dc2a76..c743612 100644
+--- a/dinov2/dinov2/configs/ssl_default_config_original.yaml
++++ b/dinov2/dinov2/configs/ssl_default_config_original.yaml
+@@ -61,7 +61,7 @@ ibot:
+ train:
+   batch_size_per_gpu: 64
+   dataset_path: Trajectory:split=TRAIN
+-  output_dir: /data/home/umang/Dinov2_trajectory/dinov2_outputs/
++  output_dir: /mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs
+   saveckp_freq: 20
+   seed: 0
+   num_workers: 10
+diff --git a/dinov2/dinov2/run/train/train.py b/dinov2/dinov2/run/train/train.py
+index ab0931f..90d65d1 100644
+--- a/dinov2/dinov2/run/train/train.py
++++ b/dinov2/dinov2/run/train/train.py
+@@ -8,7 +8,7 @@ import os
+ import sys
+ 
+ # Ensure the correct path to the dinov2 directory
+-dinov2_path = "/data/home/umang/Dinov2_trajectory/dinov2/dinov2"
++dinov2_path = "/data/home/bowen/projects/dinov2_trajectory/dinov2/dinov2"
+ if os.path.isdir(dinov2_path):
+     sys.path.append(dinov2_path)
+ else:
+diff --git a/dinov2/dinov2/train/config.yaml b/dinov2/dinov2/train/config.yaml
+index 20aa720..c881022 100644
+--- a/dinov2/dinov2/train/config.yaml
++++ b/dinov2/dinov2/train/config.yaml
+@@ -62,8 +62,8 @@ ibot:
+   head_hidden_dim: 2048
+ train:
+   batch_size_per_gpu: 60
+-  dataset_path: Trajectory:split=TRAIN:root=/data/home/umang/Vader_data/haystac_dinov2/p1tj_traj_npy
+-  output_dir: /data/home/umang/Dinov2_trajectory/dinov2_outputs
++  dataset_path: Trajectory:split=TRAIN:root=/mnt/mind_ssd2/bowen/dinov2_data/p1tj_traj_npy
++  output_dir: /mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs
+   saveckp_freq: 20
+   seed: 0
+   num_workers: 10
+diff --git a/dinov2/dinov2/train/train.py b/dinov2/dinov2/train/train.py
+index 4097293..ce24600 100644
+--- a/dinov2/dinov2/train/train.py
++++ b/dinov2/dinov2/train/train.py
+@@ -12,7 +12,7 @@ import numpy
+ from fvcore.common.checkpoint import PeriodicCheckpointer
+ import torch
+ import sys
+-sys.path.append('/data/home/umang/Dinov2_trajectory/dinov2')
++sys.path.append('/data/home/bowen/projects/dinov2_trajectory/dinov2')
+ from dinov2.data import SamplerType, make_data_loader, make_dataset
+ from dinov2.data import collate_data_and_cast, TrajectoryDataAugmentationDINO, MaskingGenerator
+ import dinov2.distributed as distributed
+@@ -29,7 +29,7 @@ from datetime import datetime
+ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+ 
+ # Initialize wandb with project name including timestamp
+-wandb.init(project=f"dinov2_traj_basic_{timestamp}")
++wandb.init(project="dinov2_trajectory", name=timestamp)
+ 
+ torch.backends.cuda.matmul.allow_tf32 = True  # PyTorch 1.12 sets this to False by default
+ logger = logging.getLogger("dinov2")
+@@ -37,7 +37,7 @@ logger = logging.getLogger("dinov2")
+ 
+ def get_args_parser(add_help: bool = True):
+     parser = argparse.ArgumentParser("DINOv2 training", add_help=add_help)
+-    parser.add_argument("--config_file", default="/data/home/umang/Dinov2_trajectory/dinov2/dinov2/train/config.yaml", metavar="FILE", help="path to config file")
++    parser.add_argument("--config_file", default="/data/home/bowen/projects/dinov2_trajectory/dinov2/dinov2/train/config.yaml", metavar="FILE", help="path to config file")
+     parser.add_argument(
+         "--no-resume",
+         action="store_true",
+@@ -58,7 +58,7 @@ For python-based LazyConfig, use "path.key=value".
+     parser.add_argument(
+         "--output-dir",
+         "--output_dir",
+-        default="/data/home/umang/Dinov2_trajectory/dinov2_outputs",
++        default="/mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs",
+         type=str,
+         help="Output directory to save logs and checkpoints",
+     )
+@@ -318,7 +318,8 @@ def do_train(cfg, model, resume=False):
+ 
+ def main(args):
+     cfg = setup(args)
+-
++    print('-------------------------------------------')
++    print(cfg)
+     model = SSLMetaArch(cfg).to(torch.device("cuda"))
+     model.prepare_for_distributed_training()
+ 
+diff --git a/dinov2/dinov2/train/train.sh b/dinov2/dinov2/train/train.sh
+index df94435..66c3565 100755
+--- a/dinov2/dinov2/train/train.sh
++++ b/dinov2/dinov2/train/train.sh
+@@ -1,9 +1,5 @@
+ #!/bin/bash
+-#export CUDA_LAUNCH_BLOCKING=1
+ export CUDA_VISIBLE_DEVICES=6,7
+-# Define variables with proper names and paths
+-$config_file=vit16_short_traj.yaml
+-$output_dir=/data/home/umang/Dinov2_trajectory/dinov2_outputs
+-
+-# Run the Python script with the provided arguments
++config_file=vit16_short_traj.yaml
++output_dir=/mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs
+ python train.py 

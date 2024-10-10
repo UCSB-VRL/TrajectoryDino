@@ -45,12 +45,12 @@ class PatchEmbed(nn.Module):
     ) -> None:
         super().__init__()
         
-        print("image size", img_size)
-        print("patch size type", patch_size)
+        # print("image size", img_size)
+        # print("patch size type", patch_size)
         image_HW = make_2tuple(img_size)
-        print("image HW", image_HW)
+        # print("image HW", image_HW)
         patch_HW = make_2tuple(patch_size)
-        print("patch HW", patch_HW)
+        # print("patch HW", patch_HW)
         patch_grid_size = (
             image_HW[0] // patch_HW[0],
             image_HW[1] // patch_HW[1],

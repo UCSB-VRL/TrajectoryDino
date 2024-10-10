@@ -174,7 +174,7 @@ class TrajectoryDataAugmentationDINO(object):
         """Crop data along the first dimension."""
         start = np.random.randint(0, self.data_points - crops_scale + 1)
         cropped_data = data[start:start + crops_scale, :, :]
-        print("Cropped data shape",cropped_data.shape)
+        # print("Cropped data shape",cropped_data.shape)
         return torch.from_numpy(cropped_data).permute(2, 0, 1)
 
     def __call__(self, data: np.ndarray) -> dict:

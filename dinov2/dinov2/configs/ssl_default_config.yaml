@@ -60,8 +60,8 @@ ibot:
   head_hidden_dim: 2048
 train:
   batch_size_per_gpu: 64
-  dataset_path: Trajectory:split=TRAIN:root=/data/home/umang/Vader_data/haystac_dinov2/p1tj_traj_npy
-  output_dir: /data/home/umang/Dinov2_trajectory/dinov2_outputs
+  dataset_path: Trajectory:split=TRAIN:root=/mnt/mind_ssd2/bowen/dinov2_data/p1tj_traj_npy
+  output_dir: /mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs
   saveckp_freq: 20
   seed: 0
   num_workers: 10

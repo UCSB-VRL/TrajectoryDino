@@ -24,12 +24,11 @@ from sklearn.preprocessing import MinMaxScaler
 from dinov2.train.ssl_meta_arch import SSLMetaArch
 import wandb
 from datetime import datetime
-os.environ['WANDB_MODE'] = 'disabled'
+
 # Generate current timestamp
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Initialize wandb with project name including timestamp
-
 wandb.init(project="dinov2_trajectory", name=timestamp)
 
 torch.backends.cuda.matmul.allow_tf32 = True  # PyTorch 1.12 sets this to False by default
@@ -57,6 +56,7 @@ For python-based LazyConfig, use "path.key=value".
         nargs=argparse.REMAINDER,
     )
     parser.add_argument(
+        "--output-dir",
         "--output_dir",
         default="/mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs",
         type=str,

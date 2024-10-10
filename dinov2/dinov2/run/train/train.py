@@ -8,7 +8,7 @@ import os
 import sys
 
 # Ensure the correct path to the dinov2 directory
-dinov2_path = "/data/home/umang/Dinov2_trajectory/dinov2/dinov2"
+dinov2_path = "/data/home/bowen/projects/dinov2_trajectory/dinov2/dinov2"
 if os.path.isdir(dinov2_path):
     sys.path.append(dinov2_path)
 else:
