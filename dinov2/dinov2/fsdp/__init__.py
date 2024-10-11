@@ -64,9 +64,17 @@ def is_sharded_fsdp(x):
 
 def free_if_fsdp(x):
     if is_sharded_fsdp(x):
-        handles = x._handles
-        true_list = [True for h in handles]
-        _reshard(x, handles, true_list)
+        handles = getattr(x, '_handles', None)
+        # handles = x._handles
+        # if handles is not None:
+        # if handles is None:
+        #     print(f"Warning: FSDP object has no _handles attribute.")
+        # else:
+        #     true_list = [True for h in handles]
+        #     _reshard(x, handles, true_list)
+        if handles is not None:
+            true_list = [True for h in handles]
+            _reshard(x, handles, true_list)
 
 
 def get_fsdp_modules(x):

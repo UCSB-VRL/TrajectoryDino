@@ -7,29 +7,10 @@ import logging
 import os
 import sys
 
-# Ensure the correct path to the dinov2 directory
-dinov2_path = "/data/home/bowen/projects/dinov2_trajectory/dinov2/dinov2"
-if os.path.isdir(dinov2_path):
-    sys.path.append(dinov2_path)
-else:
-    raise FileNotFoundError(f"The directory {dinov2_path} does not exist")
+from dinov2.logging import setup_logging
+from dinov2.train import get_args_parser as get_train_args_parser
+from dinov2.run.submit import get_args_parser, submit_jobs
 
-# Print sys.path for debugging
-print("sys.path:", sys.path)
-
-# Check if __init__.py exists in the dinov2 directory
-if not os.path.isfile(os.path.join(dinov2_path, "__init__.py")):
-    raise FileNotFoundError(f"__init__.py not found in {dinov2_path}")
-
-# Attempt to import modules and print debug information
-try:
-    from dinov2.logging import setup_logging
-    from dinov2.train import get_args_parser as get_train_args_parser
-    from dinov2.run.submit import get_args_parser, submit_jobs
-    print("Imports successful")
-except ImportError as e:
-    print(f"ImportError: {e}")
-    raise
 
 logger = logging.getLogger("dinov2")
 
@@ -50,3 +31,30 @@ class Trainer(object):
         logger.info(f"Requeuing {self.args}")
         empty = type(self)(self.args)
         return submitit.helpers.DelayedSubmission(empty)
+
+    def _setup_args(self):
+        import submitit
+
+        job_env = submitit.JobEnvironment()
+        self.args.output_dir = self.args.output_dir.replace("%j", str(job_env.job_id))
+        logger.info(f"Process group: {job_env.num_tasks} tasks, rank: {job_env.global_rank}")
+        logger.info(f"Args: {self.args}")
+
+
+def main():
+    description = "Submitit launcher for DINOv2 training"
+    train_args_parser = get_train_args_parser(add_help=False)
+    print(train_args_parser)
+    parents = [train_args_parser]
+    args_parser = get_args_parser(description=description, parents=parents)
+    args = args_parser.parse_args()
+
+    setup_logging()
+
+    assert os.path.exists(args.config_file), "Configuration file does not exist!"
+    submit_jobs(Trainer, args, name="dinov2:train")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

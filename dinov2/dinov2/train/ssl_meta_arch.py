@@ -202,13 +202,13 @@ class SSLMetaArch(nn.Module):
                 #    out=buffer_tensor_teacher[n_cls_tokens : n_cls_tokens + n_masked_patches],
                 #)
 
-                print("buffer_tensor_teacher.shape", buffer_tensor_teacher.shape)
-                print(self.teacher.dino_head)
+                # print("buffer_tensor_teacher.shape", buffer_tensor_teacher.shape)
+                # print(self.teacher.dino_head)
 
                 tokens_after_head = self.teacher.dino_head(buffer_tensor_teacher)
 
                 teacher_cls_tokens_after_head = tokens_after_head[:n_cls_tokens]
-                print("number of masked patches: ", n_masked_patches)
+                # print("number of masked patches: ", n_masked_patches)
                 masked_teacher_patch_tokens_after_head = tokens_after_head[
                     n_cls_tokens : n_cls_tokens + n_masked_patches
                 ]
@@ -281,11 +281,11 @@ class SSLMetaArch(nn.Module):
         # 1c: global crops patch tokens
         if do_ibot:
             _dim = student_global_backbone_output_dict["x_norm_clstoken"].shape[-1]
-            print("dim", _dim)
+            # print("dim", _dim)
             ibot_student_patch_tokens = student_global_backbone_output_dict["x_norm_patchtokens"]
-            print("ibot student patch tokens shape", ibot_student_patch_tokens.shape)
+            # print("ibot student patch tokens shape", ibot_student_patch_tokens.shape)
             buffer_tensor_patch_tokens = ibot_student_patch_tokens.new_zeros(upperbound, _dim)
-            print("buffer_tensor_patch_tokens shape", buffer_tensor_patch_tokens.shape)
+            # print("buffer_tensor_patch_tokens shape", buffer_tensor_patch_tokens.shape)
 
             # Step 1: Flatten ibot_teacher_patch_tokens to [B * 144, mebed_dim]
             flattened_patch_tokens = ibot_student_patch_tokens.flatten(0, 1)  # Shape: [B * 144, embed_dim]
@@ -303,8 +303,8 @@ class SSLMetaArch(nn.Module):
                 index=selected_indices,   # Select based on mask indices where masking is True
             )
 
-            print("number of masked patches", n_masked_patches)
-            print()
+            # print("number of masked patches", n_masked_patches)
+            # print()
             #buffer_tensor_patch_tokens[:n_masked_patches].copy_(
             #    torch.index_select(ibot_student_patch_tokens.flatten(0, 1), dim=0, index=mask_indices_list)
             #)
@@ -394,11 +394,11 @@ class SSLMetaArch(nn.Module):
             # accumulate loss
             loss_accumulator += self.ibot_loss_weight * ibot_patch_loss
 
-        print("loss accumulator", loss_accumulator)
+        # print("loss accumulator", loss_accumulator)
 
         self.backprop_loss(loss_accumulator)
         self.fsdp_synchronize_streams()
-        print("loss dict", loss_dict)
+        # print("loss dict", loss_dict)
         return loss_dict
 
 

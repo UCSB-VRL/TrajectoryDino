@@ -21,16 +21,17 @@ from dinov2.logging import MetricLogger
 from dinov2.utils.config import setup
 from dinov2.utils.utils import CosineScheduler
 from sklearn.preprocessing import MinMaxScaler
-from dinov2.train.ssl_meta_arch import SSLMetaArch
+from dinov2.train.ssl_meta_arch import SSLMetaArch 
 import wandb
 from datetime import datetime
-os.environ['WANDB_MODE'] = 'disabled'
-# Generate current timestamp
+import torch.distributed as dist
+# os.environ['WANDB_MODE'] = 'disabled'
+
+
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-# Initialize wandb with project name including timestamp
-
-wandb.init(project="dinov2_trajectory", name=timestamp)
+if distributed.is_main_process():
+    wandb.init(project="dinov2_trajectory", name=timestamp)
 
 torch.backends.cuda.matmul.allow_tf32 = True  # PyTorch 1.12 sets this to False by default
 logger = logging.getLogger("dinov2")
@@ -38,7 +39,7 @@ logger = logging.getLogger("dinov2")
 
 def get_args_parser(add_help: bool = True):
     parser = argparse.ArgumentParser("DINOv2 training", add_help=add_help)
-    parser.add_argument("--config_file", default="/data/home/bowen/projects/dinov2_trajectory/dinov2/dinov2/train/config.yaml", metavar="FILE", help="path to config file")
+    parser.add_argument("--config-file", default="", metavar="FILE", help="path to config file")
     parser.add_argument(
         "--no-resume",
         action="store_true",
@@ -57,11 +58,17 @@ For python-based LazyConfig, use "path.key=value".
         nargs=argparse.REMAINDER,
     )
     parser.add_argument(
+        "--output-dir",
         "--output_dir",
-        default="/mnt/mind_ssd2/bowen/projects/haystac_dinov2/dinov2_outputs",
+        default="",
         type=str,
         help="Output directory to save logs and checkpoints",
     )
+    parser.add_argument(
+        "--local-rank", 
+        default=0, 
+        type=int, 
+        help="Variable for distributed computing.") 
 
     return parser
 
@@ -128,10 +135,11 @@ def apply_optim_scheduler(optimizer, lr, wd, last_layer_lr):
 
 def do_test(cfg, model, iteration):
     new_state_dict = model.teacher.state_dict()
-
+    # print("in_dotest")
     if distributed.is_main_process():
         iterstring = str(iteration)
         eval_dir = os.path.join(cfg.train.output_dir, "eval", iterstring)
+        # print(eval_dir)
         os.makedirs(eval_dir, exist_ok=True)
         # save teacher checkpoint
         teacher_ckp_path = os.path.join(eval_dir, "teacher_checkpoint.pth")
@@ -174,7 +182,7 @@ def do_train(cfg, model, resume=False):
 
     img_size = cfg.crops.global_crops_size
     patch_size = cfg.student.patch_size
-    print("global crop size, patch size", img_size, patch_size)
+    # print("global crop size, patch size", img_size, patch_size)
     n_tokens = (img_size // patch_size)    # Total number of tokens that are crafted out of global crop
 
     # Mask generator called here 
@@ -255,8 +263,9 @@ def do_train(cfg, model, resume=False):
         optimizer.zero_grad(set_to_none=True)
         loss_dict = model.forward_backward(data, teacher_temp=teacher_temp)
         # Log the losses to wandb
-        for loss_name, loss_value in loss_dict.items():
-            wandb.log({loss_name: loss_value.item()})
+        if distributed.is_main_process():
+            for loss_name, loss_value in loss_dict.items():
+                wandb.log({loss_name: loss_value.item()})
 
         # clip gradients
 
@@ -307,6 +316,7 @@ def do_train(cfg, model, resume=False):
         # checkpointing and testing
 
         if cfg.evaluation.eval_period_iterations > 0 and (iteration + 1) % cfg.evaluation.eval_period_iterations == 0:
+            # print('start testing')
             do_test(cfg, model, f"training_{iteration}")
             torch.cuda.synchronize()
         periodic_checkpointer.step(iteration)
@@ -317,12 +327,13 @@ def do_train(cfg, model, resume=False):
 
 
 def main(args):
+    args.output_dir = os.path.join(args.output_dir, str(timestamp))
     cfg = setup(args)
     print('-------------------------------------------')
     print(cfg)
     model = SSLMetaArch(cfg).to(torch.device("cuda"))
     model.prepare_for_distributed_training()
-
+    
     logger.info("Model:\n{}".format(model))
     if args.eval_only:
         iteration = (

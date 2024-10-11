@@ -74,22 +74,22 @@ class PatchEmbed(nn.Module):
         _, _, H, W = x.shape
         patch_H, patch_W = self.patch_size
 
-        print("H, W", H, W)
-        print("patch_H, patch_W", patch_H, patch_W)
+        # print("H, W", H, W)
+        # print("patch_H, patch_W", patch_H, patch_W)
 
         assert H % patch_H == 0, f"Input image height {H} is not a multiple of patch height {patch_H}"
         assert W % patch_W == 0, f"Input image width {W} is not a multiple of patch width: {patch_W}"
 
         x = self.proj(x)  # B C H W
-        print("x", x.shape)
+        # print("x", x.shape)
         H, W = x.size(2), x.size(3)
         x = x.flatten(2).transpose(1, 2)  # B HW C
-        print("x", x.shape)
+        # print("x", x.shape)
         x = self.norm(x)
-        print("x", x.shape)
+        # print("x", x.shape)
         if not self.flatten_embedding:
             x = x.reshape(-1, H, W, self.embed_dim)  # B H W C
-        print("x", x.shape)
+        # print("x", x.shape)
         return x
 
     

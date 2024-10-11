@@ -103,9 +103,9 @@ class DinoTrajectoryTransformer(nn.Module):
         self.num_register_tokens = num_register_tokens
         self.interpolate_antialias = interpolate_antialias
         self.interpolate_offset = interpolate_offset
-        print("Self.IMAGE SIZE", self.img_size)
-        print("Self.pATCH SIZE", self.patch_size)
-        print("self.embed dim", self.embed_dim)
+        # print("Self.IMAGE SIZE", self.img_size)
+        # print("Self.pATCH SIZE", self.patch_size)
+        # print("self.embed dim", self.embed_dim)
         self.patch_embed = embed_layer(img_size=img_size, patch_size=patch_size, in_chans=in_chans, embed_dim=embed_dim)
         num_patches = self.patch_embed.num_patches
 
@@ -188,8 +188,8 @@ class DinoTrajectoryTransformer(nn.Module):
         previous_dtype = x.dtype
         npatch = x.shape[1] - 1
         N = self.pos_embed.shape[1] - 1
-        print("npatch", npatch)
-        print("pos embed shape", self.pos_embed.shape)
+        # print("npatch", npatch)
+        # print("pos embed shape", self.pos_embed.shape)
         #if npatch == N and w == h:   # Modified for non-square patches for time-series data.
         if npatch == N:
             return self.pos_embed
@@ -199,13 +199,13 @@ class DinoTrajectoryTransformer(nn.Module):
         class_pos_embed = pos_embed[:, 0]
         patch_pos_embed = pos_embed[:, 1:]
         dim = x.shape[-1]
-        #print("dim", dim)
+        # print("dim", dim)
         w0 = w // self.patch_size
         h0 = h // self.patch_size
 
-        print("patch size", self.patch_size)
-        print("W, h", w, h)
-        print("W0, h0", w0, h0)
+        # print("patch size", self.patch_size)
+        # print("W, h", w, h)
+        # print("W0, h0", w0, h0)
         #M = int(math.sqrt(N))  # Recover the number of patches in each dimension
         M = N  # Recover the number of patches in each dimension
         #assert N == M * M
@@ -229,7 +229,7 @@ class DinoTrajectoryTransformer(nn.Module):
             antialias=self.interpolate_antialias,
             **kwargs,
         )
-        print("patch pos embed", patch_pos_embed.shape)
+        # print("patch pos embed", patch_pos_embed.shape)
         #assert (w0, h0) == patch_pos_embed.shape[-2:]
         assert w0 == patch_pos_embed.shape[2]
 
@@ -238,11 +238,11 @@ class DinoTrajectoryTransformer(nn.Module):
 
     def prepare_tokens_with_masks(self, x, masks=None):
         B, nc, w, h = x.shape
-        print("x shape", x.shape)
+        # print("x shape", x.shape)
         x = self.patch_embed(x)
-        print("x shape", x.shape)
+        # print("x shape", x.shape)
         if masks is not None:
-            print("masks shape", masks.shape)
+            # print("masks shape", masks.shape)
             ### OLD
             #x = torch.where(masks.unsqueeze(-1), self.mask_token.to(x.dtype).unsqueeze(0), x)
             
@@ -265,23 +265,23 @@ class DinoTrajectoryTransformer(nn.Module):
             # Step 4: Insert the mask token into x where masks_expanded is True
             x_masked = torch.where(masks_expanded, mask_token_expanded, x)  # Shape: [B, H, embed_dim]
 
-            # Print the shapes for verification
-            print(f"x shape: {x.shape}")
-            print(f"masks shape: {masks.shape}")
-            print(f"masks_reshaped shape: {masks_reshaped.shape}")
-            print(f"masks_expanded shape: {masks_expanded.shape}")
-            print(f"mask_token_expanded shape: {mask_token_expanded.shape}")
-            print(f"x_masked shape: {x_masked.shape}")
+            #Print the shapes for verification
+            # print(f"x shape: {x.shape}")
+            # print(f"masks shape: {masks.shape}")
+            # print(f"masks_reshaped shape: {masks_reshaped.shape}")
+            # print(f"masks_expanded shape: {masks_expanded.shape}")
+            # print(f"mask_token_expanded shape: {mask_token_expanded.shape}")
+            # print(f"x_masked shape: {x_masked.shape}")
 
             # Output x_masked, the tensor with mask tokens inserted
 
 
-        print("x shape", x.shape)
+        # print("x shape", x.shape)
         x = torch.cat((self.cls_token.expand(x.shape[0], -1, -1), x), dim=1)
-        print("x shape", x.shape)
+        # print("x shape", x.shape)
         #x = x + self.interpolate_pos_encoding(x, w, h)
         
-        print("x shape", x.shape)
+        # print("x shape", x.shape)
         if self.register_tokens is not None:
             x = torch.cat(
                 (
@@ -291,7 +291,7 @@ class DinoTrajectoryTransformer(nn.Module):
                 ),
                 dim=1,
             )
-        print("x shape", x.shape)
+        # print("x shape", x.shape)
         return x
 
     def forward_features_list(self, x_list, masks_list):
@@ -321,9 +321,9 @@ class DinoTrajectoryTransformer(nn.Module):
         x = self.prepare_tokens_with_masks(x, masks)
 
         for blk in self.blocks:
-            print("before block x shape", x.shape)
+            # print("before block x shape", x.shape)
             x = blk(x)
-            print("after block x shape", x.shape)
+            # print("after block x shape", x.shape)
 
         x_norm = self.norm(x)
         return {

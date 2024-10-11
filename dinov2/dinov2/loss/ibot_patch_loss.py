@@ -100,7 +100,7 @@ class iBOTPatchLoss(nn.Module):
         s = student_patch_tokens
         loss = torch.sum(t * F.log_softmax(s / self.student_temp, dim=-1), dim=-1)
         loss = torch.sum(loss * student_masks_flat.float(), dim=-1) / student_masks_flat.sum(dim=-1).clamp(min=1.0)
-        print("forward without mask loss:", loss)
+        # print("forward without mask loss:", loss)
         return -loss.mean()
 
     def forward_masked(
@@ -126,18 +126,18 @@ class iBOTPatchLoss(nn.Module):
         
         if n_patch_tokens is None:
             n_patch_tokens =144
-        print(" masks weight shape", masks_weight.shape)
-        print("student mask flat shape ", student_masks_flat.shape)   
+        # print(" masks weight shape", masks_weight.shape)
+        # print("student mask flat shape ", student_masks_flat.shape)   
 
         dim1= student_masks_flat.shape[1] // n_patch_tokens
         dim0 = masks_weight.shape[0]// dim1
         masks_weight =torch.sum(masks_weight.reshape(dim0, dim1), dim=-1)
-        print(" masks weight shape", masks_weight.shape)
+        # print(" masks weight shape", masks_weight.shape)
         if n_masked_patches is not None:
-            print("loss shape", loss.shape)
+            # print("loss shape", loss.shape)
             loss = loss[:n_masked_patches]
         loss = loss * masks_weight
-        print("forward with mask loss:", loss)
+        # print("forward with mask loss:", loss)
         
         return -loss.sum() / student_masks_flat.shape[0]
 

@@ -1,7 +1,7 @@
-<<<<<<< HEAD
-# dinov2_trajectory
-DInov2 implementation on trajectory data
-=======
-# Dinov2_trajectory
-Dinov2 implementation on Trajectory 
->>>>>>> 28b6c50 (Initial commit of Dinov2_trajectory)
+# Trajectory DINO
+DINO V2 implementation on trajectory data
+
+
+In here
+/data/home/bowen/projects/dinov2_trajectory/dinov2/dinov2/data/datasets/trajectory.py
+change the length of the dataset. 

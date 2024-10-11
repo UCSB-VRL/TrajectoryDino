@@ -25,10 +25,11 @@ class _Split(Enum):
 
     @property
     def length(self) -> int:
+        # CHANGE for different datset sizes.
         split_lengths = {
-            _Split.TRAIN: int(0.7*99),
-            _Split.VAL: int(0.2*99),
-            _Split.TEST: int(0.7*99),
+            _Split.TRAIN: 69,
+            _Split.VAL: 12,
+            _Split.TEST: 20,
         }
         return split_lengths[self]
 
